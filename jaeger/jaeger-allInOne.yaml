@@ -1,0 +1,17 @@
+apiVersion: jaegertracing.io/v1
+kind: Jaeger
+metadata:
+  name: jaeger-allinone
+  namespace: istio-system
+spec:
+  ingress:
+    enabled: false # ingress는 disable
+  strategy: allInOne
+  storage: jaeger-storage
+#  volumeMounts:
+#  - name: jaeger-badger-ebs
+#    mountPath: /badger
+#  volumes:
+#  - name : jaeger-badger-ebs
+#    persistentVolumeClaim:
+#      claimName: jaeger-badger-ebs

@@ -1,0 +1,47 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: rabbitmq-pv-01
+  namespace: rabbitmq
+  labels:
+    app: rabbitmq
+spec:
+  storageClassName: rabbitmq-storage
+  capacity:
+    storage: 8Gi
+  accessModes:
+    - ReadWriteMany 
+  hostPath:
+    path: "/home/installer/rabbitmq/storage"
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: rabbitmq-pv-02
+  namespace: rabbitmq
+  labels:
+    app: rabbitmq
+spec:
+  storageClassName: rabbitmq-storage
+  capacity:
+    storage: 8Gi
+  accessModes:
+    - ReadWriteMany
+  hostPath:
+    path: "/home/installer/rabbitmq/storage"
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: rabbitmq-pv-03
+  namespace: rabbitmq
+  labels:
+    app: rabbitmq
+spec:
+  storageClassName: rabbitmq-storage
+  capacity:
+    storage: 8Gi
+  accessModes:
+    - ReadWriteMany
+  hostPath:
+    path: "/home/installer/rabbitmq/storage"

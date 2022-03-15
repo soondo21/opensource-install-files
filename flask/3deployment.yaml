@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tinfo-demo-rating
+  labels:
+    app: tinfo-demo-rating
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tinfo-demo-rating
+  template:
+    metadata:
+      labels:
+        app: tinfo-demo-rating
+    spec:
+      containers:
+      - name: tinfo-demo-rating
+        image: pio500/tinfo_demo_rating:0.0.9
+        ports:
+        - containerPort: 5000

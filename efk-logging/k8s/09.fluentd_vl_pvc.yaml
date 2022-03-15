@@ -1,0 +1,16 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: fluentd-vl-pvc
+  namespace: logging
+  labels:
+    app: fluentd
+spec:
+  storageClassName: logging-storage
+  accessModes:
+    - ReadWriteOnce 
+  resources:
+    requests:
+      storage: 5Gi
+  volumeName: "fluentd-vl-pv"

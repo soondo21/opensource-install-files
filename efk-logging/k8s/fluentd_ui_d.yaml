@@ -1,0 +1,40 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fluentd-ui
+  namespace: logging
+  labels:
+    app: fluentd-ui
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: fluentd-ui
+  template:
+    metadata:
+      labels:
+        app: fluentd-ui
+    spec:
+      containers:
+      - name: fluentd-ui
+        image: 192.168.188.150:5000/fluentd-ui:v1
+        resources:
+          limits:
+            cpu: 300m
+            memory: 300Mi
+          requests:
+            cpu: 100m
+            memory: 100Mi
+        ports:
+        - name: fluentd-ui
+          containerPort: 9292
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: kubernetes.io/hostname
+                operator: In
+                values:
+                - k8s-master1

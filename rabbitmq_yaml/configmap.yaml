@@ -1,0 +1,26 @@
+apiVersion: v1
+data:
+  ca.crt: |
+    -----BEGIN CERTIFICATE-----
+    MIIC5zCCAc+gAwIBAgIBADANBgkqhkiG9w0BAQsFADAVMRMwEQYDVQQDEwprdWJl
+    cm5ldGVzMB4XDTIxMDMwMzAwMTk0NVoXDTMxMDMwMTAwMTk0NVowFTETMBEGA1UE
+    AxMKa3ViZXJuZXRlczCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAJyb
+    MS7bp0Crppcf6iBChOf5EJscr7sk+YSGDQw8tX4D1or4uay6tJx7/8losETIGfbJ
+    MY2060ynw7442R0Eri7p/dKPnRubFm27fJE6kyR9r6iA0BXS0eqoMfRuLQVv9Csc
+    CtAIV7GmQq/6xLFOob+s/zgXxkCv9gYi1aeTF2M+fWUxN0VfSmgqn0juCzpzP5Eu
+    vaFOzzKPL5AXL3n38hQOUBAf1osWI/1eS6g4AAOWJWjWm8LZOsOAckgFb+a/7nIY
+    LxsWdoEuDELKKVrk5YARRpVIDkgtwPxgaMk39T7T2JwkLnjkEvNqkPbbbiZ/cwxT
+    Fjb1yzTNY+aDJ5vR5ckCAwEAAaNCMEAwDgYDVR0PAQH/BAQDAgKkMA8GA1UdEwEB
+    /wQFMAMBAf8wHQYDVR0OBBYEFBpTCZgJK0JbafeCOlBR4Z95VxKUMA0GCSqGSIb3
+    DQEBCwUAA4IBAQAh5KcQMpUG6P17i0guUG7j3oEsmw56nMU8tOKBnUMVn8rid0Sw
+    ByHucvOmvuK0UkaTwaKxJKnH0KxkedYnCJUjiAmh+bnfUe4Pq3nGt7x1shmhODzP
+    4Gheu+yGRiG0JshynwNEU8cIc1X6P0eejFxSl1kgPsTzOOyyTg0Ceg2+DrpcGOtc
+    mMtcqLg/eHtdB8xsajR7xSAQib8IKO8OC1m/qbdbDFPOEv7ak/IHUC4b+3my3Lx7
+    xjHOD8rWCVyP2J5T4IkzaY9K+JzwtYL+nIrfxe8c/vE31r7m2ePStK9iXk6EuEYb
+    o1vGfKQ2wjrcS+cZzzwgjcV9KbJCoMTUP5Gk
+    -----END CERTIFICATE-----
+kind: ConfigMap
+metadata:
+  name: kube-root-ca.crt
+  namespace: rabbitmq
+

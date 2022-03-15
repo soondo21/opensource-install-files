@@ -1,0 +1,40 @@
+apiVersion: getambassador.io/v2
+kind: TLSContext
+metadata:
+  name: hazelcast-context
+  namespace: hazelcast 
+spec:
+  hosts:
+  - www.hazelcast.com 
+  secret: hazelcast-https-secret
+---
+apiVersion: getambassador.io/v2
+kind: Host
+metadata:
+  name: console-hyper
+  namespace: hazelcast 
+spec:
+  hostname: www.hazelcast.com 
+  acmeProvider:
+    authority: none
+  tlsSecret:
+    name: hazelcast-https-secret
+  tlsContext:
+    name: hazelcast-context
+  requestPolicy:
+    insecure:
+      action: Route
+---
+kind: Mapping
+apiVersion: getambassador.io/v2
+metadata:
+  namespace: hazelcast 
+  name: hazelcast-mapping 
+  annotations:
+    getambassador.io/resource-changed: "true"
+spec:
+  prefix: /
+  service: "https://management-center-svc.hazelcast:8080"
+  host: www.hazelcast.com 
+  timeout_ms: 60000
+  connect_timeout_ms: 60000

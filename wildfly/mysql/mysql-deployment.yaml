@@ -1,0 +1,51 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql-nodeport
+  namespace: mysql
+spec:
+  ports:
+    - name: dbport
+      port: 3306
+      targetPort: 3306
+      nodePort: 30306
+  selector:
+    app: mysql
+  type: NodePort
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql-deployment
+  namespace: mysql
+spec:
+  replicas: 1 
+  selector:
+    matchLabels:
+      app: mysql
+  template:
+    metadata:
+      name: mysql-pod
+      labels:
+        app: mysql
+    spec:
+      containers:
+      - name: mysql
+        image: mysql
+        ports:
+        - name: dbport
+          containerPort: 3306
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: root
+        - name: MYSQL_DATABASE # 구성할 database
+          value: test_db
+        - name: MYSQL_USER # database에 권한이 있는 user
+          value: test_user
+        - name: MYSQL_ROOT_HOST # 접근 호스
+          value: '%'
+        - name: MYSQL_PASSWORD # database에 권한이 있는 user의 패스워드
+          value: test_user
+
+

@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: monitoring-vue
+  labels:
+    app: monitoring-vue
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: monitoring-vue
+  template:
+    metadata:
+      labels:
+        app: monitoring-vue
+    spec:
+      containers:
+      - name: monitoring-vue
+        image: pio500/vue_frontend:0.0.23
+        ports:
+        - containerPort: 8080 

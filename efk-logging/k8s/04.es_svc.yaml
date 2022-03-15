@@ -1,0 +1,21 @@
+###elasticsearch headless service
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: elasticsearch
+  namespace: logging
+  labels:
+    app: elasticsearch
+spec:
+  selector:
+    app: elasticsearch
+  #clusterIP: None
+  ports:
+    - port: 9200
+      nodePort: 32092
+      name: rest-client
+    - port: 9300
+      nodePort: 32093
+      name: inter-node
+  type: NodePort

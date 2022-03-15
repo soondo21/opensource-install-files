@@ -1,0 +1,6 @@
+###efk, elk stack
+---
+kind: Namespace
+apiVersion: v1
+metadata:
+  name: logging

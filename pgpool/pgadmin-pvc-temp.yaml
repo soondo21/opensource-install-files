@@ -1,0 +1,70 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  annotations:
+    meta.helm.sh/release-name: pgadmin
+    meta.helm.sh/release-namespace: pgpool
+    volume.alpha.kubernetes.io/storage-class: default
+    volume.beta.kubernetes.io/storage-provisioner: microk8s.io/hostpath
+  creationTimestamp: "2021-03-22T06:33:05Z"
+  finalizers:
+  - kubernetes.io/pvc-protection
+  labels:
+    app: pgadmin
+    app.kubernetes.io/managed-by: Helm
+    chart: pgadmin-0.1.12
+    heritage: Helm
+    release: pgadmin
+  managedFields:
+  - apiVersion: v1
+    fieldsType: FieldsV1
+    fieldsV1:
+      f:metadata:
+        f:annotations:
+          .: {}
+          f:meta.helm.sh/release-name: {}
+          f:meta.helm.sh/release-namespace: {}
+          f:volume.alpha.kubernetes.io/storage-class: {}
+        f:labels:
+          .: {}
+          f:app: {}
+          f:app.kubernetes.io/managed-by: {}
+          f:chart: {}
+          f:heritage: {}
+          f:release: {}
+      f:spec:
+        f:accessModes: {}
+        f:resources:
+          f:requests:
+            .: {}
+            f:storage: {}
+        f:volumeMode: {}
+      f:status:
+        f:phase: {}
+    manager: Go-http-client
+    operation: Update
+    time: "2021-03-22T06:33:05Z"
+  - apiVersion: v1
+    fieldsType: FieldsV1
+    fieldsV1:
+      f:metadata:
+        f:annotations:
+          f:volume.beta.kubernetes.io/storage-provisioner: {}
+    manager: kube-controller-manager
+    operation: Update
+    time: "2021-03-22T06:33:05Z"
+  name: pgadmin
+  namespace: pgpool
+  resourceVersion: "1619318"
+  selfLink: /api/v1/namespaces/pgpool/persistentvolumeclaims/pgadmin
+  uid: 1e567498-ab57-4b21-9116-dffa5167f067
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 4Gi
+  storageClassName: pgpool-storage
+  volumeMode: Filesystem
+status:
+  phase: Pending

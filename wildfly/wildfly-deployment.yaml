@@ -1,0 +1,72 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wildfly-deployment
+  namespace: wildfly
+spec:
+  replicas: 1 
+  selector:
+    matchLabels:
+      app: wildfly
+  template:
+    metadata:
+      name: wildfly-pod
+      labels:
+        app: wildfly
+    spec:
+      containers:
+      - name: wildfly
+        image: tmaxsoftofficial/hyperframeoe-wildfly
+        env:
+        - name: NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: TZ
+          value: Asia/Seoul
+        - name: JAVA_OPTS
+          value: "-Xms256m -Xmx512m -XX:MetaspaceSize=128m -XX:MaxMetaspaceSize=256m"
+        command: ["sh"]
+        args: ["/usr/local/data/init.sh"]
+        ports:
+        - name: http
+          containerPort: 8080
+        - name: management
+          containerPort: 9990
+        - name: https
+          containerPort: 8443
+        volumeMounts:
+        - name: wildfly-conigmap-volume
+          mountPath: /opt/jboss/wildfly/standalone/configuration/standalone.xml
+          subPath: standalone.xml
+        - name: wildfly-pv
+          mountPath: /usr/local/data
+        resources:
+          limits:
+            cpu: 250m
+            memory: 600Mi
+          requests:
+            cpu: 250m
+            memory: 300Mi
+      volumes:
+      - name: wildfly-conigmap-volume
+        configMap:
+          name: wildfly-conf
+      - name: wildfly-pv
+        persistentVolumeClaim:
+          claimName: wildfly-pvc
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: kubernetes.io/hostname
+                operator: In
+                values:
+                #- k8s-master1
+                - k8s-worker1

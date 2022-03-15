@@ -1,0 +1,188 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  labels:
+    app: rabbitmq-ha
+    chart: rabbitmq-ha-1.46.4
+    release: rabbitmq
+  name: rabbitmq-rabbitmq-ha
+  namespace: rabbitmq
+spec:
+  podManagementPolicy: OrderedReady
+  replicas: 3
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: rabbitmq-ha
+      release: rabbitmq
+  serviceName: rabbitmq-rabbitmq-ha-discovery
+  template:
+    metadata:
+      annotations:
+        checksum/config: 25e88fbb0d7e9b97fe4ad71352cb482a1b57dc7111c041a5801503e7b5d1c8a2
+        checksum/secret: 668ceef7411c139edaa71ebc06dafa400db050bc6c45a298e9272cdf1090fc1f
+      creationTimestamp: null
+      labels:
+        app: rabbitmq-ha
+        release: rabbitmq
+    spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - podAffinityTerm:
+              labelSelector:
+                matchLabels:
+                  app: rabbitmq-ha
+                  release: rabbitmq
+              topologyKey: kubernetes.io/hostname
+            weight: 1
+      containers:
+      - env:
+        - name: MY_POD_NAME
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.name
+        - name: RABBITMQ_USE_LONGNAME
+          value: "true"
+        - name: RABBITMQ_NODENAME
+          value: rabbit@$(MY_POD_NAME).rabbitmq-rabbitmq-ha-discovery.rabbitmq.svc.cluster.local
+        - name: K8S_HOSTNAME_SUFFIX
+          value: .rabbitmq-rabbitmq-ha-discovery.rabbitmq.svc.cluster.local
+        - name: K8S_SERVICE_NAME
+          value: rabbitmq-rabbitmq-ha-discovery
+        - name: RABBITMQ_ERLANG_COOKIE
+          valueFrom:
+            secretKeyRef:
+              key: rabbitmq-erlang-cookie
+              name: rabbitmq-rabbitmq-ha
+        - name: RABBIT_MANAGEMENT_USER
+          valueFrom:
+            secretKeyRef:
+              key: rabbitmq-management-username
+              name: rabbitmq-rabbitmq-ha
+        - name: RABBIT_MANAGEMENT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: rabbitmq-management-password
+              name: rabbitmq-rabbitmq-ha
+        image: rabbitmq:3.8.14
+        imagePullPolicy: IfNotPresent
+        livenessProbe:
+          exec:
+            command:
+            - /bin/bash
+            - -ec
+            - rabbitmq-diagnostics -q ping
+          failureThreshold: 6
+          initialDelaySeconds: 120
+          periodSeconds: 30
+          successThreshold: 1
+          timeoutSeconds: 20
+        name: rabbitmq-ha
+        ports:
+        - containerPort: 4369
+          name: epmd
+          protocol: TCP
+        - containerPort: 5672
+          name: amqp
+          protocol: TCP
+        - containerPort: 15672
+          name: http
+          protocol: TCP
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /var/lib/rabbitmq
+          name: data
+        - mountPath: /etc/rabbitmq
+          name: config
+        - mountPath: /etc/definitions
+          name: definitions
+          readOnly: true
+      dnsPolicy: ClusterFirst
+      initContainers:
+      - args:
+        - -c
+        - |
+          set -ex
+          cp /configmap/* /etc/rabbitmq
+          echo "${RABBITMQ_ERLANG_COOKIE}" > /var/lib/rabbitmq/.erlang.cookie
+          if [ -d "${RABBITMQ_MNESIA_DIR}" ]; then
+            touch "${RABBITMQ_MNESIA_DIR}/force_load"
+          fi
+          chown -R 100:101 /var/lib/rabbitmq/
+          chown -R 100:101 /etc/rabbitmq
+        command:
+        - sh
+        env:
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.name
+        - name: RABBITMQ_MNESIA_DIR
+          value: /var/lib/rabbitmq/mnesia/rabbit@$(POD_NAME).rabbitmq-rabbitmq-ha-discovery.rabbitmq.svc.cluster.local
+        - name: RABBITMQ_ERLANG_COOKIE
+          valueFrom:
+            secretKeyRef:
+              key: rabbitmq-erlang-cookie
+              name: rabbitmq-rabbitmq-ha
+        image: busybox:1.33.0
+        imagePullPolicy: IfNotPresent
+        name: bootstrap
+        resources: {}
+        securityContext:
+          runAsGroup: 0
+          runAsNonRoot: false
+          runAsUser: 0
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /configmap
+          name: configmap
+        - mountPath: /etc/rabbitmq
+          name: config
+        - mountPath: /var/lib/rabbitmq
+          name: data
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext:
+        fsGroup: 101
+        runAsGroup: 101
+        runAsNonRoot: true
+        runAsUser: 100
+      serviceAccount: rabbitmq-rabbitmq-ha
+      serviceAccountName: rabbitmq-rabbitmq-ha
+      terminationGracePeriodSeconds: 10
+      volumes:
+      - emptyDir: {}
+        name: config
+      - configMap:
+          defaultMode: 420
+          name: rabbitmq-rabbitmq-ha
+        name: configmap
+      - name: definitions
+        secret:
+          defaultMode: 420
+          items:
+          - key: definitions.json
+            path: definitions.json
+          secretName: rabbitmq-rabbitmq-ha
+  updateStrategy:
+    type: OnDelete
+  volumeClaimTemplates:
+  - apiVersion: v1
+    kind: PersistentVolumeClaim
+    metadata:
+      name: data
+    spec:
+      accessModes:
+      - ReadWriteMany
+      resources:
+        requests:
+          storage: 1Gi
+      storageClassName: rabbitmq-storage
+      volumeMode: Filesystem
+

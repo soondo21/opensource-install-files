@@ -1,0 +1,59 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: wildfly
+  labels:
+    app: wildfly
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: wildfly-nodeport
+  namespace: wildfly
+spec:
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8080
+      nodePort: 30300
+    - name: management
+      port: 9990
+      targetPort: 9990
+      nodePort: 30301
+    - name: https
+      port: 8443
+      targetPort: 8443
+  selector:
+    app: wildfly
+  type: NodePort
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: wildfly
+  namespace: wildfly
+  labels:
+    app: wildfly
+spec:
+  storageClassName: wildfly-storage
+  capacity:
+    storage: 20Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/home/installer/wildfly/storage/wildfly"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: wildfly-pvc
+  namespace: wildfly
+spec:
+  storageClassName: wildfly-storage
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+---

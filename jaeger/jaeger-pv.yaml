@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: jaeger-pv-volume
+  namespace : istio-systsem
+  labels:
+    type: local
+spec:
+  storageClassName: jaeger-storage
+  capacity:
+    storage: 5Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/mnt/jaeger"

@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: employee-detail
+  labels:
+    app: employee-detail
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: employee-detail
+  template:
+    metadata:
+      labels:
+        app: employee-detail
+    spec:
+      containers:
+      - name: employee-detail
+        image: pio500/flask_app:0.0.55
+        ports:
+        - containerPort: 5000
